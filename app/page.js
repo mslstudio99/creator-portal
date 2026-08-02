@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 
-// CREDENTIAL SUPABASE KAMU:
+// SUPABASE CREDENTIALS:
 const SUPABASE_URL = "https://redxcmumihxuugsxolsj.supabase.co";
 const API_KEY = "sb_publishable_HzUooLrwGJqNX0YVBZRIdw_lb0lQDIT";
 
@@ -29,7 +29,7 @@ export default function CreatorPortal() {
   const [myProjects, setMyProjects] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // 1. PROSES SIGN UP (DAFTAR AKUN BARU)
+  // 1. SIGN UP PROCESS
   const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -43,12 +43,12 @@ export default function CreatorPortal() {
       });
       const data = await res.json();
       if (res.ok) {
-        setAlertMsg({ text: '🎉 Akun berhasil dibuat! Silakan login di tab Login.', type: 'success' });
+        setAlertMsg({ text: '🎉 Account created successfully! Please log in using the Log In tab.', type: 'success' });
         setEmail(signupEmail);
         setPassword(signupPassword);
         setActiveTab('login');
       } else {
-        setAlertMsg({ text: 'Gagal Daftar: ' + (data.msg || data.error_description || 'Error'), type: 'error' });
+        setAlertMsg({ text: 'Sign Up Failed: ' + (data.msg || data.error_description || 'An error occurred'), type: 'error' });
       }
     } catch (err) {
       setAlertMsg({ text: 'Error: ' + err.message, type: 'error' });
@@ -56,7 +56,7 @@ export default function CreatorPortal() {
     setLoading(false);
   };
 
-  // 2. PROSES LOGIN
+  // 2. LOG IN PROCESS
   const handleLogin = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -76,7 +76,7 @@ export default function CreatorPortal() {
         setIsLoggedIn(true);
         fetchProjects(data.access_token);
       } else {
-        setAlertMsg({ text: 'Login Gagal: ' + (data.error_description || data.msg || 'Email/Password salah'), type: 'error' });
+        setAlertMsg({ text: 'Log In Failed: ' + (data.error_description || data.msg || 'Invalid email or password'), type: 'error' });
       }
     } catch (err) {
       setAlertMsg({ text: 'Error: ' + err.message, type: 'error' });
@@ -84,7 +84,7 @@ export default function CreatorPortal() {
     setLoading(false);
   };
 
-  // 3. PROSES SUBMIT PROJECT KE SUPABASE (MENGALIR KE MAKE/GEMINI/AIRTABLE)
+  // 3. SUBMIT PROJECT TO SUPABASE (TRIGGERS MAKE / GEMINI / AIRTABLE)
   const handleUpload = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -110,14 +110,14 @@ export default function CreatorPortal() {
       });
 
       if (res.ok) {
-        setAlertMsg({ text: '🎉 Berhasil dikirim ke Otomasi Make/Gemini!', type: 'success' });
+        setAlertMsg({ text: '🎉 Successfully submitted to Make/Gemini Automation!', type: 'success' });
         setProjectTitle('');
         setVideoLink('');
         setNotes('');
         fetchProjects(accessToken);
       } else {
         const err = await res.json();
-        setAlertMsg({ text: 'Gagal Upload: ' + (err.message || 'Error'), type: 'error' });
+        setAlertMsg({ text: 'Upload Failed: ' + (err.message || 'Error occurred'), type: 'error' });
       }
     } catch (err) {
       setAlertMsg({ text: 'Error: ' + err.message, type: 'error' });
@@ -125,7 +125,7 @@ export default function CreatorPortal() {
     setLoading(false);
   };
 
-  // 4. LOAD PROYEK MILIK USER SENSIRI (RLS PROTECTED)
+  // 4. LOAD USER'S PROJECTS (RLS PROTECTED)
   const fetchProjects = async (token) => {
     try {
       const res = await fetch(`${SUPABASE_URL}/rest/v1/creator_projects?select=*`, {
@@ -138,7 +138,7 @@ export default function CreatorPortal() {
     }
   };
 
-  // 5. LOGOUT
+  // 5. LOG OUT
   const handleLogout = () => {
     setIsLoggedIn(false);
     setAccessToken('');
@@ -159,45 +159,47 @@ export default function CreatorPortal() {
             {/* Tab Switcher */}
             <div style={{ display: 'flex', gap: '8px', marginBottom: '20px', background: '#f4f7fe', padding: '4px', borderRadius: '10px' }}>
               <button 
+                type="button"
                 onClick={() => { setActiveTab('login'); setAlertMsg({text:'', type:''}); }}
                 style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'login' ? '#4318ff' : 'transparent', color: activeTab === 'login' ? 'white' : '#707ebe', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
               >
-                LOGIN
+                LOG IN
               </button>
               <button 
+                type="button"
                 onClick={() => { setActiveTab('signup'); setAlertMsg({text:'', type:''}); }}
                 style={{ flex: 1, padding: '10px', border: 'none', background: activeTab === 'signup' ? '#4318ff' : 'transparent', color: activeTab === 'signup' ? 'white' : '#707ebe', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}
               >
-                DAFTAR AKUN
+                SIGN UP
               </button>
             </div>
 
-            {/* Form Login */}
+            {/* Login Form */}
             {activeTab === 'login' && (
               <form onSubmit={handleLogin}>
-                <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Email Kreator</label>
-                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="kreator@gmail.com" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
+                <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Creator Email</label>
+                <input type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="creator@gmail.com" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
 
                 <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Password</label>
                 <input type="password" value={password} onChange={e => setPassword(e.target.value)} required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
 
                 <button type="submit" disabled={loading} style={{ width: '100%', background: '#4318ff', color: 'white', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
-                  {loading ? 'Memverifikasi...' : 'Masuk ke Portal'}
+                  {loading ? 'Authenticating...' : 'Log In to Portal'}
                 </button>
               </form>
             )}
 
-            {/* Form Signup */}
+            {/* Signup Form */}
             {activeTab === 'signup' && (
               <form onSubmit={handleSignup}>
-                <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Email Gmail Baru</label>
-                <input type="email" value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="nama.kreator@gmail.com" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
+                <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>New Creator Email</label>
+                <input type="email" value={signupEmail} onChange={e => setSignupEmail(e.target.value)} placeholder="name.creator@gmail.com" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
 
                 <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Password</label>
-                <input type="password" value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="Minimal 6 karakter" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
+                <input type="password" value={signupPassword} onChange={e => setSignupPassword(e.target.value)} placeholder="Min. 6 characters" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
 
                 <button type="submit" disabled={loading} style={{ width: '100%', background: '#00c853', color: 'white', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
-                  {loading ? 'Mendaftarkan...' : 'Daftar Akun Baru'}
+                  {loading ? 'Registering...' : 'Create New Account'}
                 </button>
               </form>
             )}
@@ -211,21 +213,21 @@ export default function CreatorPortal() {
         ) : (
           /* Dashboard User View */
           <div>
-            <h2 style={{ color: '#1b2559', margin: '0 0 6px 0', fontSize: '22px' }}>🚀 Dashboard Kreator</h2>
-            <p style={{ color: '#707ebe', marginBottom: '20px', fontSize: '14px' }}>Selamat Datang, <strong style={{ color: '#4318ff' }}>{userEmail}</strong></p>
+            <h2 style={{ color: '#1b2559', margin: '0 0 6px 0', fontSize: '22px' }}>🚀 Creator Dashboard</h2>
+            <p style={{ color: '#707ebe', marginBottom: '20px', fontSize: '14px' }}>Welcome, <strong style={{ color: '#4318ff' }}>{userEmail}</strong></p>
 
             <form onSubmit={handleUpload}>
-              <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Judul Proyek / Konten</label>
-              <input type="text" value={projectTitle} onChange={e => setProjectTitle(e.target.value)} placeholder="Contoh: Review Sepatu Lari XYZ" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
+              <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Project / Content Title</label>
+              <input type="text" value={projectTitle} onChange={e => setProjectTitle(e.target.value)} placeholder="e.g., Running Shoes XYZ Review" required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
 
-              <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Link Video (Drive / YouTube / Loom)</label>
+              <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Video Link (Drive / YouTube / Loom)</label>
               <input type="url" value={videoLink} onChange={e => setVideoLink(e.target.value)} placeholder="https://..." required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
 
-              <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Catatan Brief / Konsep Video</label>
-              <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} placeholder="Jelaskan poin penting video..." required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
+              <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>Brief Notes / Video Concept</label>
+              <textarea value={notes} onChange={e => setNotes(e.target.value)} rows={3} placeholder="Describe key points of the video..." required style={{ width: '100%', padding: '12px', marginBottom: '16px', border: '1px solid #e0e5f2', borderRadius: '8px', boxSizing: 'border-box' }} />
 
               <button type="submit" disabled={loading} style={{ width: '100%', background: '#4318ff', color: 'white', border: 'none', padding: '14px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer' }}>
-                {loading ? 'Mengirim...' : 'Kirim ke Sistem Otomasi'}
+                {loading ? 'Submitting...' : 'Submit to Automation Pipeline'}
               </button>
             </form>
 
@@ -237,10 +239,10 @@ export default function CreatorPortal() {
 
             <hr style={{ margin: '24px 0', border: '0', borderTop: '1px solid #e0e5f2' }} />
             
-            <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>📋 Konten Milik Kamu (RLS Protected):</label>
+            <label style={{ fontWeight: 600, fontSize: '13px', color: '#2b3674', display: 'block', marginBottom: '6px' }}>📋 Your Submitted Content (RLS Protected):</label>
             <div style={{ marginTop: '10px' }}>
               {myProjects.length === 0 ? (
-                <i style={{ color: '#707ebe', fontSize: '13px' }}>Belum ada proyek yang kamu buat.</i>
+                <i style={{ color: '#707ebe', fontSize: '13px' }}>No projects submitted yet.</i>
               ) : (
                 myProjects.map(p => (
                   <div key={p.id} style={{ background: '#f8f9ff', border: '1px solid #e0e5f2', padding: '12px', borderRadius: '8px', marginBottom: '8px', fontSize: '13px' }}>
@@ -253,7 +255,7 @@ export default function CreatorPortal() {
             </div>
 
             <button type="button" onClick={handleLogout} style={{ width: '100%', background: '#e0e5f2', color: '#2b3674', border: 'none', padding: '12px', borderRadius: '8px', fontWeight: 600, cursor: 'pointer', marginTop: '16px' }}>
-              Keluar (Logout)
+              Log Out
             </button>
           </div>
         )}
